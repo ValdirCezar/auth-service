@@ -3,6 +3,7 @@ package br.com.dicasdeumdev.authservice.security;
 import br.com.dicasdeumdev.authservice.domain.dto.CredentialsDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,49 +20,46 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-	private final AuthenticationManager authenticationManager;
-	private final JWTUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+    private final JWTUtil jwtUtil;
 
-	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException {
-		try {
-			CredentialsDTO creds = new ObjectMapper().readValue(request.getInputStream(), CredentialsDTO.class);
-			UsernamePasswordAuthenticationToken authenticationToken =
-					new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword(), new ArrayList<>());
-			return authenticationManager.authenticate(authenticationToken);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    @SneakyThrows
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response){
+        CredentialsDTO creds = new ObjectMapper().readValue(request.getInputStream(), CredentialsDTO.class);
+        var authenticationToken =
+                new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword(), new ArrayList<>());
+        return authenticationManager.authenticate(authenticationToken);
 
-	@Override
-	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-											Authentication authResult) {
+    }
 
-		String username = ((UserSS) authResult.getPrincipal()).getUsername();
-		String token = jwtUtil.generateToken(username);
-		response.setHeader("access-control-expose-headers", "Authorization");
-		response.setHeader("Authorization", "Bearer " + token);
-	}
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+                                            Authentication authResult) {
 
-	@Override
-	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-											  AuthenticationException failed) throws IOException {
+        String username = ((UserSS) authResult.getPrincipal()).getUsername();
+        String token = jwtUtil.generateToken(username);
+        response.setHeader("access-control-expose-headers", "Authorization");
+        response.setHeader("Authorization", "Bearer " + token);
+    }
 
-		response.setStatus(401);
-		response.setContentType("application/json");
-		response.getWriter().append(json());
-	}
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                              AuthenticationException failed) throws IOException {
 
-	private CharSequence json() {
-		return "{"
-				+ "\"timestamp\": " + LocalDateTime.now() + ", "
-				+ "\"status\": 401, "
-				+ "\"error\": \"Unauthorized\", "
-				+ "\"message\": \"Email or password\", "
-				+ "\"path\": \"/login\""
-				+ "}";
-	}
+        response.setStatus(401);
+        response.setContentType("application/json");
+        response.getWriter().append(json());
+    }
+
+    private CharSequence json() {
+        return "{"
+                + "\"timestamp\": " + LocalDateTime.now() + ", "
+                + "\"status\": 401, "
+                + "\"error\": \"Unauthorized\", "
+                + "\"message\": \"Email or password incorrect\", "
+                + "\"path\": \"/login\""
+                + "}";
+    }
 
 }
