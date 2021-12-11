@@ -8,6 +8,7 @@ spring:
     url: jdbc:mysql://${DB_HOST:localhost:3306}/${DB_NAME:db_user}
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:123}
+    driver-class-name: org.mariadb.jdbc.Driver
 server:
   port: ${PORT:8081}
 
