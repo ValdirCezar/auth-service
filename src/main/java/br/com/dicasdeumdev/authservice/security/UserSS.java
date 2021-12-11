@@ -6,26 +6,26 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserSS implements UserDetails {
 	private static final long serialVersionUID = 1L;
 	
-	private final Integer id;
+	private final Long id;
 	private final String email;
 	private final String password;
 	private final Collection<? extends GrantedAuthority> authorities;
 
-	public UserSS(Integer id, String email, String password, Set<ProfileEnum> perfis) {
+	public UserSS(Long id, String email, String password, List<ProfileEnum> profiles) {
 		super();
 		this.id = id;
 		this.email = email;
 		this.password = password;
-		this.authorities = perfis.stream().map(x -> new SimpleGrantedAuthority(x.getDescription())).collect(Collectors.toSet());
+		this.authorities = profiles.stream().map(x -> new SimpleGrantedAuthority(x.getDescription())).collect(Collectors.toSet());
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 

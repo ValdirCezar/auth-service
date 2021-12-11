@@ -1,7 +1,9 @@
 package br.com.dicasdeumdev.authservice.domain;
 
 import br.com.dicasdeumdev.authservice.enumerations.ProfileEnum;
+import lombok.Getter;
 
+@Getter
 public class User {
 
     private Long id;
