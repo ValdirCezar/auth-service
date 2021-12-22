@@ -13,7 +13,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: admin
     password: 123
-    url: jdbc:postgresql://localhost:5432/db_user
+    url: jdbc:postgresql://127.0.0.1:5432/db_user
 
   # JPA properties
   jpa:
@@ -32,3 +32,8 @@ spring:
     level:
       org.springframework: info
       org.hibernate: debug
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

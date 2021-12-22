@@ -24,7 +24,6 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 
 		if(user.isPresent()) {
 			return new UserSS(
-					user.get().getId(),
 					user.get().getEmail(),
 					user.get().getPassword(),
 					List.of(user.get().getProfile()));
